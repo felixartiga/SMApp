@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cancionero JDTC</title>
+<title>SMApp</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0e0e10;--bg2:#17171a;--bg3:#1f1f23;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);--text:#f0ede8;--text2:#9b9890;--text3:#6b6865;--gold:#c9a84c;--gold2:#e8c97a;--radius:10px}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -83,7 +83,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .ssong-num{font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
 .ssong-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:500;color:var(--text);margin-bottom:2px}
 .ssong-key{font-size:11px;color:var(--gold);margin-bottom:.75rem;letter-spacing:.04em}
-.ssong-lyrics{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.85}
+.ssong-lyrics{font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--text);display:flex;flex-direction:column}
+.chord-line{font-weight:700;color:var(--gold2);letter-spacing:.03em;font-size:12.5px;margin-top:.5em}
+.lyric-line{font-weight:500;color:var(--text);line-height:1.6}
+.lyric-blank{height:.5em}
 .ssong-lyrics-2col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
 .misa-date-bar{padding:1rem 1.25rem;border-bottom:0.5px solid var(--border);background:var(--bg2)}
 .misa-date-row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:.5rem}
@@ -126,7 +129,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   .ssong-num{color:#888!important;font-size:10px}
   .ssong-title{color:#000!important;font-size:1.3rem}
   .ssong-key{color:#555!important}
-  .ssong-lyrics{color:#333!important;font-size:11px}
+  .ssong-lyrics{font-size:11.5px}
+  .chord-line{color:#8a6d1a!important;font-weight:700!important}
+  .lyric-line{color:#222!important;font-weight:500!important}
   .ssong-lyrics-2col{display:grid!important;grid-template-columns:1fr 1fr!important;gap:1.5rem!important}
   .sheet-wrap{display:block!important}
   #sheetarea,#misasheet{display:block!important}
@@ -137,7 +142,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 <div id="login">
   <div class="login-cross">✝</div>
-  <h1 class="login-title">Cancionero JDTC</h1>
+  <h1 class="login-title">SMApp</h1>
   <p class="login-sub">Acceso para el equipo</p>
   <div class="login-box">
     <input type="password" id="pwd" placeholder="Contraseña" onkeydown="if(event.key==='Enter')tryLogin()">
@@ -153,7 +158,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 <div id="app">
   <nav class="topnav">
-    <span class="nav-brand">✝ JDTC</span>
+    <span class="nav-brand">✝ SMApp</span>
     <span class="nav-mode" id="nav-mode"></span>
     <button class="nav-back" id="nav-back" onclick="goHome()">← Inicio</button>
   </nav>
@@ -183,6 +188,12 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   </div>
 
   <div id="screen-free">
+    <div class="misa-date-bar">
+      <div class="misa-date-row">
+        <span class="misa-date-label">Fecha del servicio</span>
+        <input type="date" class="misa-date-input" id="free-date">
+      </div>
+    </div>
     <div class="two-col">
       <div>
         <p class="col-title">Cantos disponibles</p>
@@ -458,16 +469,31 @@ function goHome(){
   sel=[];MOMENTOS.forEach(m=>masig[m]=null);
 }
 
+function todayISO(){
+  const d=new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function slugify(s){
+  return s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/\s+/g,'-');
+}
+
+function fileBaseName(){
+  const modeText=document.getElementById('nav-mode').textContent||'cantos';
+  const isMisa=document.getElementById('screen-misa').style.display==='block';
+  const dateEl=document.getElementById(isMisa?'misa-date':'free-date');
+  const dateVal=(dateEl&&dateEl.value)?dateEl.value:todayISO();
+  return `${slugify(modeText)}_${dateVal}`;
+}
+
 function startMode(mode){
   document.getElementById('screen-home').style.display='none';
   document.getElementById('nav-back').style.display='block';
   if(mode==='misa'){
     document.getElementById('screen-misa').style.display='block';
     document.getElementById('nav-mode').textContent='Misa';
-    const today=new Date();
-    const iso=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
     const di=document.getElementById('misa-date');
-    if(di&&!di.value){di.value=iso;updateLitInfo();}
+    if(di&&!di.value){di.value=todayISO();updateLitInfo();}
     renderM();
   } else {
     document.getElementById('screen-free').style.display='block';
@@ -475,6 +501,8 @@ function startMode(mode){
     sel=[];
     document.getElementById('fsearch').value='';
     document.getElementById('sheetarea').innerHTML='';
+    const fd=document.getElementById('free-date');
+    if(fd&&!fd.value)fd.value=todayISO();
     renderFL();renderFS();
   }
 }
@@ -523,6 +551,24 @@ function mDn(i){if(i<sel.length-1){[sel[i+1],sel[i]]=[sel[i],sel[i+1]];renderFS(
 function rmv(i){sel.splice(i,1);renderFL();renderFS();document.getElementById('sheetarea').innerHTML='';}
 function clearSel(){sel=[];renderFL();renderFS();document.getElementById('sheetarea').innerHTML='';}
 
+const CHORD_TOKEN=/^[A-G](#|b)?(maj7|majb5|m7b5|dim7|sus2|sus4|add9|add11|min7|maj9|maj|m7|mM7|dim|aug|sus|add|m)*[0-9]{0,2}(\/[A-G](#|b)?m?)?$/i;
+function isChordLine(line){
+  const t=line.trim();
+  if(!t)return false;
+  return t.split(/\s+/).every(w=>{
+    const parts=w.split(/[-–—]/).map(p=>p.replace(/^[\(\[]+|[\)\]]+$/g,'')).filter(Boolean);
+    if(parts.length===0)return true;
+    return parts.every(p=>/^(x\d+|bis|\d+)$/i.test(p)||CHORD_TOKEN.test(p));
+  });
+}
+function renderLyrics(l){
+  return l.split('\n').map(line=>{
+    if(line.trim()==='')return '<div class="lyric-blank"></div>';
+    if(isChordLine(line))return `<div class="chord-line">${line}</div>`;
+    return `<div class="lyric-line">${line}</div>`;
+  }).join('');
+}
+
 function buildSheetHTML(songs,mode){
   return songs.map((s,i)=>{
     const lines=s.l.split('\n');
@@ -536,9 +582,9 @@ function buildSheetHTML(songs,mode){
       }
       const c1=lines.slice(0,sp).join('\n');
       const c2=lines.slice(sp).join('\n');
-      lyricsHtml=`<div class="ssong-lyrics-2col"><div class="ssong-lyrics">${c1}</div><div class="ssong-lyrics">${c2}</div></div>`;
+      lyricsHtml=`<div class="ssong-lyrics-2col"><div class="ssong-lyrics">${renderLyrics(c1)}</div><div class="ssong-lyrics">${renderLyrics(c2)}</div></div>`;
     } else {
-      lyricsHtml=`<div class="ssong-lyrics">${s.l}</div>`;
+      lyricsHtml=`<div class="ssong-lyrics">${renderLyrics(s.l)}</div>`;
     }
     return `<div class="ssong">
     <div class="ssong-num">${mode==='misa'?s.momento:`Canto ${i+1} de ${songs.length}`}</div>
@@ -569,7 +615,7 @@ let _currentTxt='';
 function buildSheet(){
   if(sel.length===0)return;
   const songs=sel.map(idx=>S[idx]);
-  const titulo='CANCIONERO JDTC — '+document.getElementById('nav-mode').textContent.toUpperCase();
+  const titulo='SMAPP — '+document.getElementById('nav-mode').textContent.toUpperCase();
   _currentTxt=buildTxt(songs,titulo);
   document.getElementById('sheetarea').innerHTML=`<div class="sheet-wrap">
     <div class="sheet-header">
@@ -587,7 +633,7 @@ function buildMisaSheet(){
     return;
   }
   const songs=assigned.map(m=>({...MISA_BANK[masig[m]],momento:m}));
-  const titulo='ESQUEMA DE MISA — JDTC';
+  const titulo='ESQUEMA DE MISA — SMAPP';
   _currentTxt=buildTxt(songs,titulo);
   document.getElementById('misasheet').innerHTML=`<div class="sheet-wrap">
     <div class="sheet-header">
@@ -602,13 +648,16 @@ function downloadTxt(titulo){
   const blob=new Blob([_currentTxt],{type:'text/plain;charset=utf-8'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download='cantos-jdtc.txt';
+  a.download=fileBaseName()+'.txt';
   a.click();
   URL.revokeObjectURL(a.href);
 }
 
 function doPrint(){
+  const prevTitle=document.title;
+  document.title=fileBaseName();
   window.print();
+  setTimeout(()=>{document.title=prevTitle;},1000);
 }
 
 function doCopy(titulo){
