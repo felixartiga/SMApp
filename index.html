@@ -242,10 +242,16 @@ let S=[];
 let _songsReady=false;
 let _pendingApp=false;
 
+function tagCrossover(){
+  S.forEach(s=>{
+    if(!s.momento&&COMUNION_CROSSOVER.some(t=>t.toLowerCase()===s.t.toLowerCase()))s.momento='Comunión';
+  });
+}
+
 fetch(SCRIPT_URL,{redirect:'follow'})
   .then(r=>r.json())
-  .then(data=>{S=(Array.isArray(data)&&data.length)?data:_LEGACY;MISA_BANK=S.concat(MISA_ONLY);_songsReady=true;if(_pendingApp)showApp();})
-  .catch(()=>{S=_LEGACY;MISA_BANK=S.concat(MISA_ONLY);_songsReady=true;if(_pendingApp)showApp();});
+  .then(data=>{S=(Array.isArray(data)&&data.length)?data:_LEGACY;tagCrossover();MISA_BANK=S.concat(MISA_ONLY);_songsReady=true;if(_pendingApp)showApp();})
+  .catch(()=>{S=_LEGACY;tagCrossover();MISA_BANK=S.concat(MISA_ONLY);_songsReady=true;if(_pendingApp)showApp();});
 
 function showApp(){
   document.getElementById('loading').style.display='none';
@@ -350,7 +356,7 @@ const MISA_ONLY=[
 ];
 
 const MOMENTOS=["Entrada","Señor ten piedad","Gloria","Aleluya","Ofertorio","Santo","Cordero de Dios","Comunión","Salida"];
-const MOM_ORDINARIO=["Señor ten piedad","Gloria","Santo","Cordero de Dios"];
+const COMUNION_CROSSOVER=["Jesús Eucaristía","Jesus Eucaristía (Mayra)","Estoy aquí","Nadie Te Ama Como Yo"];
 let sel=[],masig={},pMom='',_litInfo=null,MISA_BANK=[];
 MOMENTOS.forEach(m=>masig[m]=null);
 
@@ -684,10 +690,9 @@ function opP(m){
   pMom=m;
   const pk=document.getElementById('mpicker');
   pk.style.display='block';
-  const isOrdinario=MOM_ORDINARIO.includes(m);
   pk.innerHTML=`<div class="picker-overlay">
     <p style="font-size:11px;color:var(--text3);margin-bottom:.5rem;letter-spacing:.05em;text-transform:uppercase">Asignar a: ${m}</p>
-    ${isOrdinario?'<p style="font-size:11px;color:var(--text3);margin-bottom:.5rem;font-style:italic">Texto fijo del Ordinario de la Misa — solo se muestran las melodías catalogadas para este momento.</p>':''}
+    <p style="font-size:11px;color:var(--text3);margin-bottom:.5rem;font-style:italic">Solo se muestran los cantos catalogados para este momento.</p>
     <div class="search-wrap" style="margin-bottom:.5rem">
       <span class="search-icon">🔍</span>
       <input type="text" id="psearch" placeholder="Buscar canto..." oninput="renderPL()">
@@ -702,10 +707,7 @@ function clsP(){document.getElementById('mpicker').style.display='none';}
 
 function renderPL(){
   const q=(document.getElementById('psearch').value||'').toLowerCase();
-  const isOrdinario=MOM_ORDINARIO.includes(pMom);
-  const bank=isOrdinario
-    ? MISA_BANK.filter(s=>s.momento===pMom)
-    : MISA_BANK.filter(s=>!s.momento||s.momento===pMom);
+  const bank=MISA_BANK.filter(s=>s.momento===pMom);
   document.getElementById('plist').innerHTML=bank.filter(s=>s.t.toLowerCase().includes(q)).map(s=>{
     const i=MISA_BANK.indexOf(s);
     return `<div class="pitem" onclick="asgn(${i})"><span>${s.t}</span><span class="pitem-key">${s.k}</span></div>`;
