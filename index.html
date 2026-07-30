@@ -107,6 +107,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .loading-text{font-size:13px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase}
 
 #screen-misa{display:none;padding:1.25rem}
+#screen-horasanta{display:none;padding:1.25rem}
 .misa-grid{display:flex;flex-direction:column;gap:5px;margin-bottom:1rem}
 .mrow{display:flex;align-items:center;gap:8px;padding:8px 12px;border:0.5px solid var(--border);border-radius:8px;background:var(--bg2)}
 .mlbl{font-size:11px;font-weight:500;color:var(--text3);min-width:130px;letter-spacing:.03em}
@@ -123,7 +124,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 /* PDF print styles */
 @media print{
   body{background:#fff!important;color:#000!important}
-  #login,#app>.topnav,#screen-home,#screen-free .two-col,#screen-free .abar,#screen-misa .misa-grid,#screen-misa>div:not(#misasheet),#mpicker,.sheet-header{display:none!important}
+  #login,#app>.topnav,#screen-home,#screen-free .two-col,#screen-free .abar,#screen-misa>*:not(#misasheet),#screen-horasanta>*:not(#hssheet),#mpicker,.sheet-header{display:none!important}
   .sheet-wrap{border:none!important;margin:0!important}
   .ssong{padding:1.2rem 0!important;border-bottom:1px solid #ddd!important;page-break-inside:avoid;break-inside:avoid}
   .ssong-num{color:#888!important;font-size:10px}
@@ -177,7 +178,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <div class="mode-card" onclick="startMode('horasanta')">
         <div class="mode-icon">🕯</div>
         <div class="mode-name">Hora Santa</div>
-        <div class="mode-desc">Elige y ordena cantos para la hora santa</div>
+        <div class="mode-desc">Misa + exposición, adoración y reposición del Santísimo</div>
       </div>
       <div class="mode-card" onclick="startMode('adoracion')">
         <div class="mode-icon">🙌</div>
@@ -219,18 +220,54 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <div class="misa-date-bar">
       <div class="misa-date-row">
         <span class="misa-date-label">Fecha del servicio</span>
-        <input type="date" class="misa-date-input" id="misa-date" oninput="updateLitInfo()">
+        <input type="date" class="misa-date-input" id="misa-date" oninput="updateLitInfo('misa-date','lit-info')">
       </div>
       <div id="lit-info"></div>
     </div>
     <div class="misa-grid" id="mgrid"></div>
-    <div id="mpicker" style="display:none"></div>
     <div class="abar">
       <button class="btn btn-gold" onclick="buildMisaSheet()">📄 Ver hoja completa</button>
       <button class="btn" onclick="clearMisa()">Limpiar</button>
     </div>
     <div id="misasheet"></div>
   </div>
+
+  <div id="screen-horasanta">
+    <div class="misa-date-bar">
+      <div class="misa-date-row">
+        <span class="misa-date-label">Fecha del servicio</span>
+        <input type="date" class="misa-date-input" id="hs-date" oninput="updateLitInfo('hs-date','hs-lit-info')">
+      </div>
+      <div id="hs-lit-info"></div>
+    </div>
+    <p class="col-title" style="margin:1rem 0 .5rem">Misa</p>
+    <div class="misa-grid" id="hs-grid-misa"></div>
+    <p class="col-title" style="margin:1rem 0 .5rem">Exposición del Santísimo</p>
+    <div class="misa-grid" id="hs-grid-exp"></div>
+    <p class="col-title" style="margin:1rem 0 .5rem">Cantos de adoración</p>
+    <div class="two-col">
+      <div>
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="hs-fsearch" placeholder="Buscar canto..." oninput="renderHSFL()">
+        </div>
+        <div class="slist" id="hs-flist"></div>
+      </div>
+      <div>
+        <p class="col-title">Seleccionados <span id="hs-fcount" style="opacity:.6"></span></p>
+        <div class="sellist" id="hs-fsel"></div>
+      </div>
+    </div>
+    <p class="col-title" style="margin:1rem 0 .5rem">Reposición y salida</p>
+    <div class="misa-grid" id="hs-grid-fin"></div>
+    <div class="abar">
+      <button class="btn btn-gold" onclick="buildHSSheet()">📄 Ver hoja completa</button>
+      <button class="btn" onclick="clearHS()">Limpiar</button>
+    </div>
+    <div id="hssheet"></div>
+  </div>
+
+  <div id="mpicker" style="display:none"></div>
 </div>
 
 <script>
@@ -347,18 +384,25 @@ const MISA_ONLY=[
   {t:"Pan de Vida",k:"A",momento:"Comunión",l:"A C#m\nMisterio de amor oculto en un pan,\n\nF#m C#m\nCordero Inmolado, víctima y altar;\n\nD F#m\nQuedarte quisiste muy cerca de mí,\n\nBm D E\n¡Oh! gloria escondida, has venido hasta aquí.\n\nA C#m\nYa cae la noche en mi corazón;\n\nF#m C#m\nNo pases de largo, Quédate Señor.\n\nD F#m\nReconocerte quiero en la fracción del pan,\n\nBm D E\nQuita las vendas de mis ojos para poderte contemplar.\n\nA E F#m D Bm E\nEres Jesús el Pan de vida, bajado del cielo para mí.\n\nC#m F#m\nY ante tan sublime milagro de amor,\n\nBm D E\nRindo mi vida en adoración.\n\nD E A\nPan de vida."},
   {t:"Milagro de Amor",k:"G",momento:"Comunión",l:"G D Em Em7\nJesús, aquí presente en forma real\n\nC Am F D\nTe pido un poco más de fe y de humildad\n\nG D Em Em7\nQuisiera poder ser digno de compartir\n\nC Am F D\nContigo el milagro más grande de amor\n\nG D Em\nMilagro de amor tan infinito\n\nBm C\nEn que Tu, mi Dios te has hecho\n\nAm G D\nTan pequeño y tan humilde para entrar en mi\n\nG D Em\nMilagro de amor tan infinito\n\nBm C\nEn que tu mi Dios te olvidas\n\nAm G D\nDe tu gloria y de tu majestad por mi\n\nG D Em Em7\nY hoy vengo lleno de alegrías\n\nC Am F D\nA recibirte en esta eucaristía\n\nG D Em Em7\nTe doy gracias por llamarme a esta cena\n\nC Am F D\nPorque, aunque no soy digno visitas tú mi alma\n\nG D Em\nMilagro de amor tan infinito\n\nBm C\nEn que Tu, mi Dios te has hecho\n\nAm G D\nTan pequeño y tan humilde para entrar en mi\n\nG D Em\nMilagro de amor tan infinito\n\nBm C\nEn que tu mi Dios te olvidas\n\nAm G D\nDe tu gloria y de tu majestad por mi"},
   {t:"Ya No Eres Pan y Vino",k:"D",momento:"Comunión",l:"D G D\nYa no eres pan y vino,\n\nG D A\nahora que eres cuerpo y sangre, vives en mí\n\nG D\nde rodillas yo caigo al contemplar tu bondad,\n\nE A\ncomo no te voy a adorar\n\nD G D\nMientras te pierdes en mis labios,\n\nG D A\ntu gracia va inundando todo mi corazón\n\nG D\npor esa paz que me llena de alegría mi ser\n\nE A\ncómo no te voy a adorar\n\nD A\nSeñor Jesús, mi salvador,\n\nBm G D\namor eterno, amor divino\n\nG D A D\nya no falta nada, lo tengo todo, te tengo a tí (bis)\n\nD G D\nDueño y Rey del universo\n\nG D A\ncómo puede ser posible que busques mi amor\n\nG D\nTú tan grande y yo pequeño y te fijas en mí\n\nE A\ncómo no te voy a adorar\n\nD G D\nDe rodillas yo te pido\n\nG D A\nque el día cuando tú me llames sea como hoy\n\nG D\npara mirarte a los ojos y poderte decir\n\nE A\nque cómo no te voy a adorar"},
-  {t:"Alabemos al Santísimo",k:"D",momento:"Comunión",l:"D A D G A D D7\nAlabemos al santísimo sacramento del altar\n\nG D Em A7 D\nEn los cielos y en la tierra, aquí y en todo lugar."},
+  {t:"Alabemos al Santísimo",k:"D",momento:"Entrada del Santísimo",l:"D A D G A D D7\nAlabemos al santísimo sacramento del altar\n\nG D Em A7 D\nEn los cielos y en la tierra, aquí y en todo lugar."},
   {t:"¿Por Qué Lloras? (Pascua)",k:"D",momento:"Comunión",l:"D\nHan pasado ya tres días\ndesde que se fue\n\nBm\nTodavía no entiendo\ncómo le ha pasado esto a él\n\nG\nAl que más amaba\nal que por amor vivía\n\nD\nSe me encoge el corazón\n\nA\nAl ver tan rota a María\n\nD\nCojo unas colonias y voy a visitarle\n\nBm\nLlamo a mis amigas para acompañarme\n\nG\nDe camino no podemos evitar\n\nA\nLágrimas que caen al recordar\n\nBm\nLlegamos al sepulcro\nla piedra han movido\n\nG\nNo entendemos nada\n\nD\nEl sepulcro está vacío\n\nBm\nQué es lo que ha pasado, acaso lo han robado\n\nG\nCuando miro dentro un ser de luz sentado\n\nA\nQue susurra a mi lado\n\nG A\nNo entiendo mujer, por qué lloras\n\nD D7\nPor qué buscáis entre los muertos\n\nG A\nÉl no está aquí, ha resucitado\n\nD\nRecordad cuando os dijo\n\nD7\nQue debía ser entregado\n\nG A\nPor nuestros pecados, ser crucificado\n\nD A\nPero que al tercer día volvería\n\nD\nPaz en mis entrañas\namor inexplicable\n\nBm\nSólo quiero gritarlo\nDios existe, Dios es grande\n\nG\nLágrimas ahora de felicidad\n\nA\nNos han regalado la eternidad\n\nG A\nNo entiendo mujer, por qué lloras\n\nD D7\npor qué buscáis entre los muertos"},
   {t:"María Mírame",k:"A",momento:"Salida",l:"A E F#m - D\nMaría mírame, María mírame\n\nA D E\nSi tú me miras él también me mirará\n\nF#m - D A D\nMadre mía mírame de la mano llévame\n\nA E A\nMuy cerca de él que ahí me quiero quedar\n\nF#m E F#m\nMaría cúbreme con tu manto\n\nD E A A7\nQue tengo miedo y no sé rezar\n\nD E A\nQue por tus ojos misericordiosos\n\nF#m D E A\nTendré la fuerza tendré la paz\n\nA E F#m - D\nMaría mírame, María mírame\n\nA D E\nSi tú me miras él también me mirará\n\nF#m - D A D\nMadre mía mírame de la mano llévame\n\nA E A\nMuy cerca de él que ahí me quiero quedar"},
   {t:"Contigo, María",k:"D",momento:"Salida",l:"D G\nQuiero caminar contigo María\n\nD G\nPues tu eres mi Madre eres mi guía\n\nA G\nTu eres para mí el más grande ejemplo\n\nD A\nde santidad, de humildad.\n\nD G D - A\nGuía mis pasos Llévame al cielo\n\nBm G A\nBajo tu manto No tengo miedo\n\nD G D - A\nLlena de gracia Ave María\n\nBm A D\nHoy yo te ofrezco toda mi vida\n\nD G\nQuiero caminar contigo María\n\nD G\nNo solo un momento, todos los días\n\nA G\nNecesito tu amor de Madre\n\nD A\nTu intercesión ante el Señor\n\nD G D - A\nGuía mis pasos Llévame al cielo\n\nBm G A\nBajo tu manto No tengo miedo\n\nD G D - A\nLlena de gracia Ave María\n\nBm A D\nHoy yo te ofrezco toda mi vida"},
   {t:"Junto a Ti María",k:"D",momento:"Salida",l:"D A\nJunto a ti María,\n\nBm F#m\nComo niño quiero estar,\n\nG D\nTómame en tus manos,\n\nE A\nGuíame en mi caminar.\n\nD A\nQuiero que me eduques,\n\nBm F#m\nQue me enseñes a orar,\n\nG D\nHazme transparente,\n\nA D\nLléname de paz.\n\nD A Bm F#m\nMadre, Madre,\n\nG D E A\nMadre, Madre.\n\nD A Bm F#m\nMadre, Madre,\n\nG D E/A D\nMadre, Madre.\n\nGracias Madre mía,\npor llevarnos a Jesús,\nHaznos más humildes,\ntan sencillos como tú.\n\nGracias Madre mía,\npor abrir tu corazón,\nporque nos congregas\ny nos das tu amor."},
-  {t:"Es María la Blanca Paloma",k:"D",momento:"Salida",l:"D A7 D\nEs María la blanca paloma (2)\n\nD7 G\nque ha venido a América\n\nA7 D\nque ha venido a América\n\nEm7 Em\nque ha venido a América\n\nA7 D\na traer la paz\n\nD A7 D\nPastorcitos humildes de Fátima,\n\nD7 G\nse vieron muy tristes\n\nA7 D\nse vieron muy tristes\n\nEm7 Em\nse vieron muy tristes\n\nA7 D\npor nuestra maldad.\n\nD A7 D\nLes mandaste a rezar el Rosario,\n\nD7 G\npor los pecadores,\n\nA7 D\npor los pecadores,\n\nEm7 Em\npor los pecadores,\n\nA7 D\npara que haya paz."}
+  {t:"Es María la Blanca Paloma",k:"D",momento:"Salida",l:"D A7 D\nEs María la blanca paloma (2)\n\nD7 G\nque ha venido a América\n\nA7 D\nque ha venido a América\n\nEm7 Em\nque ha venido a América\n\nA7 D\na traer la paz\n\nD A7 D\nPastorcitos humildes de Fátima,\n\nD7 G\nse vieron muy tristes\n\nA7 D\nse vieron muy tristes\n\nEm7 Em\nse vieron muy tristes\n\nA7 D\npor nuestra maldad.\n\nD A7 D\nLes mandaste a rezar el Rosario,\n\nD7 G\npor los pecadores,\n\nA7 D\npor los pecadores,\n\nEm7 Em\npor los pecadores,\n\nA7 D\npara que haya paz."},
+  {t:"Humildes Gracias",k:"C",momento:"Reposición del Santísimo",l:"C                          G\nHumildes gracias demos a Dios\n\nDm                          C\nque en una Hostia todo se dio.\n\nF                          C\nGracias mil veces, gracias mil veces\n\nG                          C\nHumildes gracias demos a Dios"}
 ];
 
 const MOMENTOS=["Entrada","Señor ten piedad","Gloria","Aleluya","Ofertorio","Santo","Cordero de Dios","Comunión","Salida"];
+const HS_MISA_PART=MOMENTOS.slice(0,-1);
+const HS_EXP_PART=["Entrada del Santísimo"];
+const HS_FIN_PART=["Reposición del Santísimo","Salida"];
+const HS_ALL_MOMENTOS=[...HS_MISA_PART,...HS_EXP_PART,...HS_FIN_PART];
 const COMUNION_CROSSOVER=["Jesús Eucaristía","Jesus Eucaristía (Mayra)","Estoy aquí","Nadie Te Ama Como Yo"];
-let sel=[],masig={},pMom='',_litInfo=null,MISA_BANK=[];
+let sel=[],masig={},hsAsig={},hsSel=[],pMom='',_litInfo=null,MISA_BANK=[],currentMode='',ACTIVE_ASIG=null;
 MOMENTOS.forEach(m=>masig[m]=null);
+HS_ALL_MOMENTOS.forEach(m=>hsAsig[m]=null);
+ACTIVE_ASIG=masig;
 
 function calcEaster(y){
   const a=y%19,b=Math.floor(y/100),c=y%100,
@@ -436,8 +480,8 @@ function getLitInfo(date){
   return{season,color,gloria,gloriaReason,alleluia,cycle,solemnity};
 }
 
-function updateLitInfo(){
-  const input=document.getElementById('misa-date');
+function updateLitInfo(dateId,infoId){
+  const input=document.getElementById(dateId);
   if(!input||!input.value)return;
   const [yr,mo,dy]=input.value.split('-').map(Number);
   const d=new Date(yr,mo-1,dy);
@@ -445,14 +489,14 @@ function updateLitInfo(){
   const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   const dateStr=`${d.getDate()} de ${MESES[d.getMonth()]} de ${d.getFullYear()}`;
   const readUrl=`https://misa.es/${yr}/${String(mo).padStart(2,'0')}/${String(dy).padStart(2,'0')}`;
-  document.getElementById('lit-info').innerHTML=`<div class="lit-card">
+  document.getElementById(infoId).innerHTML=`<div class="lit-card">
     <div class="lit-season-row"><span class="lit-dot" style="background:${_litInfo.color}"></span><strong>${_litInfo.season}</strong> &nbsp;·&nbsp; Año ${_litInfo.cycle}</div>
     ${_litInfo.solemnity?`<div class="lit-solemnity">⭐ ${_litInfo.solemnity}</div>`:''}
     <div class="lit-row"><span>${_litInfo.gloria?'✅':'❌'}</span><span><strong>Gloria:</strong> ${_litInfo.gloriaReason}</span></div>
     <div class="lit-row"><span>${_litInfo.alleluia?'✅':'⚠️'}</span><span><strong>Aleluya:</strong> ${_litInfo.alleluia?'Sí se canta.':'Se reemplaza por aclamación al Evangelio (sin Aleluya).'}</span></div>
     <a class="lit-link" href="${readUrl}" target="_blank">📖 Ver lecturas del día →</a>
   </div>`;
-  renderM();
+  renderActive();
 }
 
 function tryLogin(){
@@ -470,9 +514,12 @@ function goHome(){
   document.getElementById('screen-home').style.display='block';
   document.getElementById('screen-free').style.display='none';
   document.getElementById('screen-misa').style.display='none';
+  document.getElementById('screen-horasanta').style.display='none';
   document.getElementById('nav-back').style.display='none';
   document.getElementById('nav-mode').textContent='';
   sel=[];MOMENTOS.forEach(m=>masig[m]=null);
+  hsSel=[];HS_ALL_MOMENTOS.forEach(m=>hsAsig[m]=null);
+  currentMode='';
 }
 
 function todayISO(){
@@ -486,8 +533,10 @@ function slugify(s){
 
 function fileBaseName(){
   const modeText=document.getElementById('nav-mode').textContent||'cantos';
-  const isMisa=document.getElementById('screen-misa').style.display==='block';
-  const dateEl=document.getElementById(isMisa?'misa-date':'free-date');
+  let dateId='free-date';
+  if(currentMode==='misa')dateId='misa-date';
+  else if(currentMode==='horasanta')dateId='hs-date';
+  const dateEl=document.getElementById(dateId);
   const dateVal=(dateEl&&dateEl.value)?dateEl.value:todayISO();
   return `${slugify(modeText)}_${dateVal}`;
 }
@@ -495,15 +544,26 @@ function fileBaseName(){
 function startMode(mode){
   document.getElementById('screen-home').style.display='none';
   document.getElementById('nav-back').style.display='block';
+  currentMode=mode;
   if(mode==='misa'){
     document.getElementById('screen-misa').style.display='block';
     document.getElementById('nav-mode').textContent='Misa';
+    ACTIVE_ASIG=masig;
     const di=document.getElementById('misa-date');
-    if(di&&!di.value){di.value=todayISO();updateLitInfo();}
-    renderM();
+    if(di&&!di.value){di.value=todayISO();updateLitInfo('misa-date','lit-info');}
+    renderActive();
+  } else if(mode==='horasanta'){
+    document.getElementById('screen-horasanta').style.display='block';
+    document.getElementById('nav-mode').textContent='Hora Santa';
+    ACTIVE_ASIG=hsAsig;
+    const di=document.getElementById('hs-date');
+    if(di&&!di.value){di.value=todayISO();updateLitInfo('hs-date','hs-lit-info');}
+    renderActive();
+    document.getElementById('hs-fsearch').value='';
+    renderHSFL();renderHSFS();
   } else {
     document.getElementById('screen-free').style.display='block';
-    document.getElementById('nav-mode').textContent=mode==='horasanta'?'Hora Santa':'Adoración';
+    document.getElementById('nav-mode').textContent='Adoración';
     sel=[];
     document.getElementById('fsearch').value='';
     document.getElementById('sheetarea').innerHTML='';
@@ -670,9 +730,11 @@ function doCopy(titulo){
   navigator.clipboard.writeText(_currentTxt).catch(()=>{});
 }
 
-function renderM(){
-  document.getElementById('mgrid').innerHTML=MOMENTOS.map(m=>{
-    const si=masig[m],s=si!==null?MISA_BANK[si]:null;
+function renderMomentGrid(moments,gridId){
+  const el=document.getElementById(gridId);
+  if(!el)return;
+  el.innerHTML=moments.map(m=>{
+    const si=ACTIVE_ASIG[m],s=(si!==null&&si!==undefined)?MISA_BANK[si]:null;
     const gloriaOff=m==='Gloria'&&_litInfo&&!_litInfo.gloria;
     const alleluiaOff=m==='Aleluya'&&_litInfo&&!_litInfo.alleluia;
     const dimmed=gloriaOff||alleluiaOff;
@@ -684,6 +746,16 @@ function renderM(){
       <button class="mpick" onclick="opP('${m}')">${s?'Cambiar':'Elegir'}</button>
     </div>`;
   }).join('');
+}
+
+function renderActive(){
+  if(currentMode==='misa'){
+    renderMomentGrid(MOMENTOS,'mgrid');
+  } else if(currentMode==='horasanta'){
+    renderMomentGrid(HS_MISA_PART,'hs-grid-misa');
+    renderMomentGrid(HS_EXP_PART,'hs-grid-exp');
+    renderMomentGrid(HS_FIN_PART,'hs-grid-fin');
+  }
 }
 
 function opP(m){
@@ -714,9 +786,89 @@ function renderPL(){
   }).join('');
 }
 
-function asgn(i){masig[pMom]=i;clsP();renderM();document.getElementById('misasheet').innerHTML='';}
-function clrM(m){masig[m]=null;renderM();document.getElementById('misasheet').innerHTML='';}
-function clearMisa(){MOMENTOS.forEach(m=>masig[m]=null);renderM();document.getElementById('misasheet').innerHTML='';}
+function activeSheetId(){return currentMode==='misa'?'misasheet':'hssheet';}
+
+function asgn(i){
+  ACTIVE_ASIG[pMom]=i;
+  clsP();
+  renderActive();
+  const el=document.getElementById(activeSheetId());if(el)el.innerHTML='';
+}
+function clrM(m){
+  ACTIVE_ASIG[m]=null;
+  renderActive();
+  const el=document.getElementById(activeSheetId());if(el)el.innerHTML='';
+}
+function clearMisa(){MOMENTOS.forEach(m=>masig[m]=null);renderActive();document.getElementById('misasheet').innerHTML='';}
+
+function renderHSFL(){
+  const q=(document.getElementById('hs-fsearch').value||'').toLowerCase();
+  document.getElementById('hs-flist').innerHTML=S.filter(s=>s.t.toLowerCase().includes(q)).map(s=>{
+    const i=S.indexOf(s),on=hsSel.includes(i);
+    return `<div class="srow${on?' on':''}" onclick="hsTog(${i})">
+      <div class="chk${on?' on':''}">${on?'✓':''}</div>
+      <span class="rtitle">${s.t}</span>
+      <span class="rkey">${s.k}</span>
+    </div>`;
+  }).join('');
+}
+
+function hsTog(i){
+  const p=hsSel.indexOf(i);
+  if(p===-1)hsSel.push(i);else hsSel.splice(p,1);
+  document.getElementById('hssheet').innerHTML='';
+  renderHSFL();renderHSFS();
+}
+
+function renderHSFS(){
+  const n=hsSel.length;
+  document.getElementById('hs-fcount').textContent=n>0?`(${n})`:'';
+  const el=document.getElementById('hs-fsel');
+  if(n===0){el.innerHTML='<p class="empty-msg">Selecciona cantos de adoración</p>';return;}
+  el.innerHTML=hsSel.map((idx,i)=>{
+    const s=S[idx];
+    return `<div class="selitem">
+      <span class="selnum">${i+1}</span>
+      <span class="seltitle">${s.t}</span>
+      <span class="selkey">${s.k}</span>
+      <button class="smb" onclick="hsMUp(${i})">↑</button>
+      <button class="smb" onclick="hsMDn(${i})">↓</button>
+      <button class="smb" onclick="hsRmv(${i})">×</button>
+    </div>`;
+  }).join('');
+}
+
+function hsMUp(i){if(i>0){[hsSel[i-1],hsSel[i]]=[hsSel[i],hsSel[i-1]];renderHSFS();document.getElementById('hssheet').innerHTML='';}}
+function hsMDn(i){if(i<hsSel.length-1){[hsSel[i+1],hsSel[i]]=[hsSel[i],hsSel[i+1]];renderHSFS();document.getElementById('hssheet').innerHTML='';}}
+function hsRmv(i){hsSel.splice(i,1);renderHSFL();renderHSFS();document.getElementById('hssheet').innerHTML='';}
+
+function clearHS(){
+  HS_ALL_MOMENTOS.forEach(m=>hsAsig[m]=null);
+  hsSel.length=0;
+  renderActive();
+  renderHSFL();renderHSFS();
+  document.getElementById('hssheet').innerHTML='';
+}
+
+function buildHSSheet(){
+  const preSongs=[...HS_MISA_PART,...HS_EXP_PART].filter(m=>hsAsig[m]!=null).map(m=>({...MISA_BANK[hsAsig[m]],momento:m}));
+  const adorSongs=hsSel.map((idx,i)=>({...S[idx],momento:hsSel.length>1?`Cantos de Adoración (${i+1}/${hsSel.length})`:'Cantos de Adoración'}));
+  const postSongs=HS_FIN_PART.filter(m=>hsAsig[m]!=null).map(m=>({...MISA_BANK[hsAsig[m]],momento:m}));
+  const songs=[...preSongs,...adorSongs,...postSongs];
+  if(songs.length===0){
+    document.getElementById('hssheet').innerHTML='<p style="color:var(--text3);font-size:13px;padding:1rem 0;text-align:center">Aún no hay cantos asignados</p>';
+    return;
+  }
+  const titulo='ESQUEMA DE HORA SANTA — SMAPP';
+  _currentTxt=buildTxt(songs,titulo);
+  document.getElementById('hssheet').innerHTML=`<div class="sheet-wrap">
+    <div class="sheet-header">
+      <span class="sheet-header-title">Hoja de Hora Santa</span>
+      ${makeActions(songs,titulo)}
+    </div>
+    ${buildSheetHTML(songs,'misa')}
+  </div>`;
+}
 </script>
 </body>
 </html>
