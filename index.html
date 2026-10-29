@@ -87,7 +87,14 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .chord-line{font-weight:700;color:var(--gold2);letter-spacing:.03em;font-size:12.5px;margin-top:.5em;white-space:pre-wrap}
 .lyric-line{font-weight:500;color:var(--text);line-height:1.6;white-space:pre-wrap}
 .lyric-blank{height:.5em}
-.ssong-lyrics-2col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.lyric-line.chorded{white-space:normal;margin-top:.35em}
+.w{white-space:nowrap}
+.ca{display:inline-block;white-space:pre}
+.ch{display:block;font-weight:700;color:var(--gold2);letter-spacing:.03em;font-size:12.5px;line-height:1.3;padding-right:.3em;width:0;white-space:nowrap}
+.ca.tight .ch{width:auto}
+.ssong-lyrics.ssong-lyrics-2col{display:block;column-count:2;column-gap:1.5rem}
+.stanza{break-inside:avoid;page-break-inside:avoid;margin-bottom:.5em}
+.chord-line{break-after:avoid;page-break-after:avoid}
 .misa-date-bar{padding:1rem 1.25rem;border-bottom:0.5px solid var(--border);background:var(--bg2)}
 .misa-date-row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:.5rem}
 .misa-date-label{font-size:11px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase}
@@ -131,9 +138,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   .ssong-title{color:#000!important;font-size:1.3rem}
   .ssong-key{color:#555!important}
   .ssong-lyrics{font-size:11.5px}
-  .chord-line{color:#8a6d1a!important;font-weight:700!important}
+  .chord-line,.ch{color:#8a6d1a!important;font-weight:700!important}
   .lyric-line{color:#222!important;font-weight:500!important}
-  .ssong-lyrics-2col{display:grid!important;grid-template-columns:1fr 1fr!important;gap:1.5rem!important}
+  .ssong-lyrics.ssong-lyrics-2col{display:block!important;column-count:2!important;column-gap:1.5rem!important}
   .sheet-wrap{display:block!important}
   #sheetarea,#misasheet{display:block!important}
 }
@@ -390,7 +397,7 @@ const MISA_ONLY=[
   {t:"Contigo, María",k:"D",momento:"Salida",l:"D  G\nQuiero caminar contigo María\n\nD  G\nPues tu eres mi Madre eres mi guía\n\nA  G\nTu eres para mí el más grande ejemplo\n\nD  A\nde santidad, de humildad.\n\nD  G  D - A\nGuía mis pasos Llévame al cielo\n\nBm  G  A\nBajo tu manto No tengo miedo\n\nD  G  D - A\nLlena de gracia Ave María\n\nBm  A  D\nHoy yo te ofrezco toda mi vida\n\nD  G\nQuiero caminar contigo María\n\nD  G\nNo solo un momento, todos los días\n\nA  G\nNecesito tu amor de Madre\n\nD  A\nTu intercesión ante el Señor\n\nD  G  D - A\nGuía mis pasos Llévame al cielo\n\nBm  G  A\nBajo tu manto No tengo miedo\n\nD  G  D - A\nLlena de gracia Ave María\n\nBm  A  D\nHoy yo te ofrezco toda mi vida"},
   {t:"Junto a Ti María",k:"D",momento:"Salida",l:"D  A\nJunto a ti María,\n\nBm  F#m\nComo niño quiero estar,\n\nG  D\nTómame en tus manos,\n\nE  A\nGuíame en mi caminar.\n\nD  A\nQuiero que me eduques,\n\nBm  F#m\nQue me enseñes a orar,\n\nG  D\nHazme transparente,\n\nA  D\nLléname de paz.\n\nD  A  Bm  F#m\nMadre, Madre,\n\nG  D  E  A\nMadre, Madre.\n\nD  A  Bm  F#m\nMadre, Madre,\n\nG  D  E/A  D\nMadre, Madre.\n\nGracias Madre mía,\npor llevarnos a Jesús,\nHaznos más humildes,\ntan sencillos como tú.\n\nGracias Madre mía,\npor abrir tu corazón,\nporque nos congregas\ny nos das tu amor."},
   {t:"Es María la Blanca Paloma",k:"D",momento:"Salida",l:"D  A7  D\nEs María la blanca paloma (2)\n\nD7  G\nque ha venido a América\n\nA7  D\nque ha venido a América\n\nEm7  Em\nque ha venido a América\n\nA7  D\na traer la paz\n\nD  A7  D\nPastorcitos humildes de Fátima,\n\nD7  G\nse vieron muy tristes\n\nA7  D\nse vieron muy tristes\n\nEm7  Em\nse vieron muy tristes\n\nA7  D\npor nuestra maldad.\n\nD  A7  D\nLes mandaste a rezar el Rosario,\n\nD7  G\npor los pecadores,\n\nA7  D\npor los pecadores,\n\nEm7  Em\npor los pecadores,\n\nA7  D\npara que haya paz."},
-  {t:"Humildes Gracias",k:"C",momento:"Reposición del Santísimo",l:"C  G\nHumildes gracias demos a Dios\n\nDm  C\nque en una Hostia todo se dio.\n\nF  C\nGracias mil veces, gracias mil veces\n\nG  C\nHumildes gracias demos a Dios"}
+  {t:"Humildes Gracias",k:"C",momento:"Reposición del Santísimo",l:"C                          G\nHumildes gracias demos a Dios\n\nDm                          C\nque en una Hostia todo se dio.\n\nF                          C\nGracias mil veces, gracias mil veces\n\nG                          C\nHumildes gracias demos a Dios"}
 ];
 
 const MOMENTOS=["Entrada","Señor ten piedad","Gloria","Aleluya","Ofertorio","Santo","Cordero de Dios","Comunión","Salida"];
@@ -627,12 +634,59 @@ function isChordLine(line){
     return parts.every(p=>/^(x\d+|bis|\d+)$/i.test(p)||CHORD_TOKEN.test(p));
   });
 }
+function expandTabs(s){let o='';for(const c of s){if(c==='\t'){do o+=' ';while(o.length%8);}else o+=c;}return o;}
+const escH=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+// Ancla cada acorde a la letra exacta (columna) donde está en el original, para que
+// se mantenga en su sitio aunque la fuente sea proporcional o la línea se parta.
+function renderPair(chordLine,lyric){
+  const chords=[...expandTabs(chordLine).matchAll(/\S+/g)].map(m=>({pos:m.index,ch:m[0]}));
+  // "tight": el siguiente acorde está tan cerca que este debe empujar la letra para no encimarse;
+  // si no, el acorde se desborda sobre la letra sin abrirle huecos.
+  chords.forEach((c,j)=>{const n=chords[j+1];c.tight=!!n&&n.pos-c.pos<c.ch.length+2;});
+  const L=expandTabs(lyric);
+  const anchor=(c,txt,end)=>`<span class="ca${c.tight||end?' tight':''}"><span class="ch">${escH(c.ch)}</span>${txt?escH(txt):'&nbsp;'}</span>`;
+  let html='',ci=0;
+  for(const m of L.matchAll(/\s+|\S+/g)){
+    const start=m.index,end=start+m[0].length;
+    const inTok=[];
+    while(ci<chords.length&&chords[ci].pos<end)inTok.push(chords[ci++]);
+    if(/^\s/.test(m[0])){
+      html+=inTok.length?inTok.map(c=>anchor(c,' ')).join(''):' ';
+      continue;
+    }
+    let w='',cur=start;
+    inTok.forEach((c,k)=>{
+      const p=Math.max(c.pos,cur);
+      w+=escH(L.slice(cur,p));
+      const nx=k+1<inTok.length?Math.max(inTok[k+1].pos,p+1):end;
+      w+=anchor(c,L.slice(p,nx));
+      cur=Math.min(nx,end);
+    });
+    w+=escH(L.slice(cur,end));
+    html+=`<span class="w">${w}</span>`;
+  }
+  // Acordes que caen después del final de la letra
+  if(ci<chords.length)html+=' '+chords.slice(ci).map(c=>anchor(c,'',true)).join(' ');
+  return `<div class="lyric-line chorded">${html}</div>`;
+}
 function renderLyrics(l){
-  return l.split('\n').map(line=>{
-    if(line.trim()==='')return '<div class="lyric-blank"></div>';
-    if(isChordLine(line))return `<div class="chord-line">${line}</div>`;
-    return `<div class="lyric-line">${line}</div>`;
-  }).join('');
+  const lines=l.split('\n');
+  let out='';
+  for(let i=0;i<lines.length;i++){
+    const line=lines[i];
+    if(line.trim()===''){out+='<div class="lyric-blank"></div>';continue;}
+    if(isChordLine(line)){
+      const nx=lines[i+1];
+      // Solo anclar si la línea trae posiciones reales; una lista de acordes separados por 1-2
+      // espacios (p. ej. los cantos de Misa transcritos) no dice dónde cambiar, se muestra tal cual.
+      const t=expandTabs(line), positioned=!/^(\S+ {1,2})+\S+\s*$/.test(t);
+      if(positioned&&nx!==undefined&&nx.trim()!==''&&!isChordLine(nx)){out+=renderPair(line,nx);i++;continue;}
+      out+=`<div class="chord-line">${escH(expandTabs(line))}</div>`;
+      continue;
+    }
+    out+=`<div class="lyric-line">${escH(line)}</div>`;
+  }
+  return out;
 }
 
 function buildSheetHTML(songs,mode){
@@ -640,15 +694,10 @@ function buildSheetHTML(songs,mode){
     const lines=s.l.split('\n');
     let lyricsHtml;
     if(lines.length>25){
-      const mid=Math.round(lines.length/2);
-      let sp=mid;
-      for(let d=1;d<=6;d++){
-        if(mid-d>=0&&lines[mid-d]===''){sp=mid-d;break;}
-        if(mid+d<lines.length&&lines[mid+d]===''){sp=mid+d;break;}
-      }
-      const c1=lines.slice(0,sp).join('\n');
-      const c2=lines.slice(sp).join('\n');
-      lyricsHtml=`<div class="ssong-lyrics-2col"><div class="ssong-lyrics">${renderLyrics(c1)}</div><div class="ssong-lyrics">${renderLyrics(c2)}</div></div>`;
+      // Columnas tipo periódico: llena izq → der en cada página antes de pasar a la siguiente.
+      // Cada estrofa va en un bloque que no se parte entre columnas.
+      const stanzas=s.l.split(/\n\s*\n/).filter(st=>st.trim()!=='');
+      lyricsHtml=`<div class="ssong-lyrics ssong-lyrics-2col">${stanzas.map(st=>`<div class="stanza">${renderLyrics(st)}</div>`).join('')}</div>`;
     } else {
       lyricsHtml=`<div class="ssong-lyrics">${renderLyrics(s.l)}</div>`;
     }
